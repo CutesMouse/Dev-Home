@@ -1,0 +1,19 @@
+#include <iostream>
+
+using namespace std;
+int main() {
+    int count;
+    cin >> count;
+    for (int o = 0 ; o < count ; o++) {
+        int ints[4];
+        for (int i = 0 ; i < 4 ; i++) {
+            cin >> ints[i];
+        }
+        int fDif = ints[1] - ints[0];
+        if (fDif == (ints[2] - ints[1]) && fDif == (ints[3] - ints[2])) {
+            cout << ints[0] << " " << ints[1] << " " << ints[2] << " " << ints[3] << " " << ints[3] + fDif << "\n";
+            continue;
+        }
+        cout << ints[0] << " " << ints[1] << " " << ints[2] << " " << ints[3] << " " << ints[3] * (ints[3] / ints[2]) << "\n";
+    }
+}
