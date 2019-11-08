@@ -1,0 +1,24 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+int getD(int a, int b, int c) {
+    return (b*b - 4*a*c);
+}
+int main() {
+    int a,b,c;
+    while (cin >> a >> b >> c) {
+        int d = getD(a,b,c);
+        if (d < 0) {
+            cout << "No real root\n";
+            continue;
+        }
+        if (d == 0) {
+            cout << "Two same roots x=" <<(float) -b / (2*((float) a)) << "\n";
+            continue;
+        }
+        float xdiF = sqrt(d) / 2*(float) a;
+        float soild = (float) -b / 2*(float) a;
+        cout << "Two different roots x1=" << soild + xdiF << " , x2=" << soild - xdiF << "\n";
+    }
+}
