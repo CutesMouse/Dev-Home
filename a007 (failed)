@@ -1,0 +1,37 @@
+#include <iostream>
+#include <set>
+#include <cmath>
+
+using namespace std;
+int main() {
+    cin.tie(nullptr);
+    ios::sync_with_stdio(false);
+    set<int> prime;
+    set<int> notprime;
+    for (int i = 2 ; i <= 46340 ; i++) {
+        if (notprime.count(i) == 0) {
+            prime.insert(i);
+            for (int p = 2; i*p <= 46341; p++) {
+                notprime.insert(i*p);
+            }
+        }
+    }
+    int num;
+    while (cin >> num) {
+        if (prime.count(num)) {
+            cout << "質數" << endl;
+            continue;
+        }
+        int v = (int) sqrt(num)+1;
+        for (int tier : prime) {
+            if (num % tier == 0) {
+                cout << "非質數" << endl;
+                break;
+            }
+            if (v <= tier) {
+                cout << "質數" << endl;
+                break;
+            }
+        }
+    }
+}
