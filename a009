@@ -1,0 +1,12 @@
+#include <iostream>
+using namespace std;
+int main() {
+	int dif = '*' - '1';
+	string l;
+	while (getline(cin,l)) {
+		for (auto it = l.begin() ; it != l.end() ; it++) {
+			cout << (char) ((*it) + dif);
+		}
+		cout << endl;
+	}
+}
