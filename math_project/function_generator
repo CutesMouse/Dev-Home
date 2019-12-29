@@ -1,0 +1,127 @@
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#include "resource.h"
+#include <windows.h>
+#include <sstream>
+#include <iostream>
+using namespace std;
+LRESULT CALLBACK wndProc(HWND, UINT, WPARAM, LPARAM);
+HWND Nums[4];
+HWND text;
+struct Pnt {
+	Pnt(double x, double y) : x(x), y(y) {
+
+	}
+	bool operator==(Pnt pnt) {
+		return x == pnt.x && y == pnt.y;
+	}
+	double x;
+	double y;
+};
+class LINEAR_FUNCTION {
+public:
+	LINEAR_FUNCTION(Pnt p1, Pnt p2) : p1(p1), p2(p2) {
+		if (p1 == p2) return;
+		calc();
+	}
+	wstring toString() {
+		wstringstream ws;
+		ws.clear();
+		if (x == 0);
+		else if (x == 1) ws << L"x ";
+		else if (x == -1) ws << L"-x ";
+		else if (x > 0) ws << x << L"x ";
+		else if (x < 0) ws << L"- " << -x<< L"x ";
+		if (y == 0);
+		else if (y == 1) ws << L"+ y ";
+		else if (y == -1) ws << L"- y ";
+		else if (y > 0) ws <<L"+ "<< y << L"y ";
+		else if (y < 0) ws << L"- " << -y << L"y ";
+		ws <<L" = " << c;
+		return ws.str();
+	}
+private:
+	double x;
+	double y;
+	double c;
+	Pnt p1;
+	Pnt p2;
+	void calc() {
+		x = p1.y - p2.y;
+		y = p2.x - p1.x;
+		c = (p1.y*p2.x) - (p1.x*p1.y) + (p1.x * p1.y) - (p1.x * p2.y);
+	}
+};
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE preInst, LPSTR lpstr, int cmd) {
+	WNDCLASS wc = { 0 };
+	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
+	wc.hInstance = hInst;
+	wc.lpszClassName = L"equationGenerator";
+	wc.hCursor = LoadCursor(hInst, IDC_ARROW);
+	wc.lpfnWndProc = wndProc;
+	wc.hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_ICON1));
+	RegisterClass(&wc);
+
+	CreateWindowEx(WS_EX_TOPMOST,wc.lpszClassName, L"Function Generator", (WS_OVERLAPPEDWINDOW | WS_VISIBLE) & ~WS_MAXIMIZEBOX,100,100,600,280,NULL,NULL,hInst,NULL);
+
+	MSG msg;
+	while (GetMessage(&msg,NULL,0,0)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+}
+void FONT(HWND hwnd) {
+	SendMessage(hwnd, WM_SETFONT, (WPARAM)CreateFont(30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"微軟正黑體"),NULL);
+}
+void init(HWND hwnd) {
+	FONT(Nums[0] = CreateWindow(L"edit", L"", WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_CENTER, 20, 20, 200, 40, hwnd, NULL, NULL, NULL));
+	FONT(Nums[1] = CreateWindow(L"edit", L"", WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_CENTER, 230, 20, 200, 40, hwnd, NULL, NULL, NULL));
+	FONT(Nums[2] = CreateWindow(L"edit", L"", WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_CENTER, 20, 70, 200, 40, hwnd, NULL, NULL, NULL));
+	FONT(Nums[3] = CreateWindow(L"edit", L"", WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | ES_CENTER, 230, 70, 200, 40, hwnd, NULL, NULL, NULL));
+	FONT(text = CreateWindow(L"static", L"", WS_CHILD | WS_VISIBLE, 20, 170, 570, 700, hwnd, NULL, NULL, NULL));
+	FONT(CreateWindow(L"button", L"Calculate!", WS_CHILD | WS_VISIBLE, 20, 120, 150, 40, hwnd, (HMENU) 1, NULL, NULL));
+}
+double toNum(wchar_t* c) {
+	wstringstream ws;
+	ws.clear();
+	ws << wstring(c);
+	double r;
+	ws >> r;
+	return r;
+}
+double initN(HWND hwnd) {
+	double r;
+	wchar_t cs[32];
+	GetWindowText(hwnd, cs, 32);
+	r = toNum(cs);
+	return r;
+}
+void bc(HWND hwnd) {
+	Pnt p1 = { initN(Nums[0]),initN(Nums[1]) };
+	Pnt p2 = { initN(Nums[2]),initN(Nums[3]) };
+	SetWindowText(text, LINEAR_FUNCTION(p1, p2).toString().c_str());
+}
+LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
+	switch (msg) {
+	case WM_CREATE:
+		init(hwnd);
+		break;
+	case WM_COMMAND:
+		switch (wp) {
+		case 1:
+			bc(hwnd);
+			break;
+		}
+		break;
+	case WM_CLOSE:
+		PostQuitMessage(0);
+		break;
+	case WM_DESTROY:
+		DestroyWindow(hwnd);
+		break;
+	default:
+		return DefWindowProc(hwnd, msg, wp, lp);
+	}
+	return 0;
+}
