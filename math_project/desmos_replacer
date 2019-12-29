@@ -1,0 +1,120 @@
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#include <iostream>
+#include <sstream>
+#include <windows.h>
+#include "Resource.h"
+using namespace std;
+LRESULT CALLBACK wndProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK dlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE preInst, LPSTR lp, int cm) {
+	WNDCLASS wc = { 0 };
+	wc.hInstance = hInst;
+	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
+	wc.lpszClassName = L"Desmos";
+	wc.hCursor = LoadCursor(hInst, MAKEINTRESOURCE(IDC_CURSOR1));
+	wc.lpfnWndProc = wndProc;
+	RegisterClass(&wc);
+	CreateWindowEx(WS_EX_TOPMOST,L"Desmos", L"Desmos Transformer", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 700, 300, NULL, NULL, hInst, NULL);
+	MSG msg;
+	
+	while (GetMessage(&msg, NULL, 0, 0)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+}
+HWND number;
+HWND n;
+HWND a;
+HWND b;
+HWND source;
+HWND output;
+void FONT(HWND hwnd) {
+	HFONT f = CreateFont(22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, L"微軟正黑體");
+	SendMessage(hwnd, WM_SETFONT, (WPARAM)f, NULL);
+}
+wstring replaceAll(wstring line, wstring from, wstring to) {
+	int pos;
+	while ((pos = line.find(from)) < line.size()) {
+		line = line.replace(pos, from.size(), to);
+	}
+	return line;
+}
+wstring getString(HWND hwnd) {
+	int length = GetWindowTextLength(hwnd);
+	wchar_t* c;
+	c = new wchar_t[length + 1];
+	GetWindowText(hwnd, c, length + 1);
+	return wstring(c);
+}
+double toNumber(wstring s) {
+	wstringstream ws;
+	ws << s;
+	double d;
+	ws >> d;
+	return d;
+}
+void calc() {
+	wstring s = getString(source);
+	wstring nV = getString(n);
+	wstring aV = getString(a);
+	wstring bV = getString(b);
+	wstring numberV = getString(number);
+	//\left(n_{9}x-a_{9}-14\right)^{2}+\left(n_{9}y-b_{9}-4\right)^{2}=1\left\{n_{9}y-b_{9}\ge4\right\}\left\{n_{9}x-a_{9}\ge14\right\}
+	wstring after;
+	after = replaceAll(s, L"\\left", L"");
+	after = replaceAll(after, L"\\right", L"");
+	if (numberV.size() != 0) {
+		after = replaceAll(after, L"n_{" + numberV + L"}", nV);
+		after = replaceAll(after, L"a_{" + numberV + L"}", aV);
+		after = replaceAll(after, L"b_{" + numberV + L"}", bV);
+	}
+	else {
+		after = replaceAll(after, L"n", nV);
+		after = replaceAll(after, L"a", aV);
+		after = replaceAll(after, L"b", bV);
+	}
+	after = replaceAll(after, L"^{2}",L"^2");
+	after = replaceAll(after, L"\\ge", L"≧");
+	after = replaceAll(after, L"\\le", L"≦");
+	after = replaceAll(after, L"\\", L"");
+	after = replaceAll(after, L"--", L"+");
+	after = replaceAll(after, L"+-", L"-");
+	SetWindowText(output, after.c_str());
+}
+void init(HWND hwnd) {
+	FONT(CreateWindow(L"static", L"編號: ", WS_VISIBLE | WS_CHILD, 20, 20, 40, 23, hwnd, NULL, NULL, NULL));
+	FONT(number = CreateWindow(L"edit", L"", WS_VISIBLE | WS_CHILD, 70, 20, 90, 23, hwnd, NULL, NULL, NULL));
+	FONT(CreateWindow(L"static", L"a數: ", WS_VISIBLE | WS_CHILD, 20, 50, 40, 23, hwnd, NULL, NULL, NULL));
+	FONT(a = CreateWindow(L"edit", L"", WS_VISIBLE | WS_CHILD, 70, 50, 90, 23, hwnd, NULL, NULL, NULL));
+	FONT(CreateWindow(L"static", L"b數: ", WS_VISIBLE | WS_CHILD, 170, 20, 40, 23, hwnd, NULL, NULL, NULL));
+	FONT(b = CreateWindow(L"edit", L"", WS_VISIBLE | WS_CHILD, 220, 20, 90, 23, hwnd, NULL, NULL, NULL));
+	FONT(CreateWindow(L"static", L"n數: ", WS_VISIBLE | WS_CHILD, 170, 50, 40, 23, hwnd, NULL, NULL, NULL));
+	FONT(n = CreateWindow(L"edit", L"", WS_VISIBLE | WS_CHILD, 220, 50, 90, 23, hwnd, NULL, NULL, NULL));
+	FONT(CreateWindow(L"button", L"送出", WS_VISIBLE | WS_CHILD | BS_CENTER, 20, 80, 292, 30, hwnd, (HMENU) 1, NULL, NULL));
+	FONT(source = CreateWindow(L"edit", L"", WS_VISIBLE | WS_CHILD | ES_MULTILINE | WS_VSCROLL, 320, 20, 343, 90, hwnd, NULL, NULL, NULL));
+	FONT(output = CreateWindow(L"edit", L"(輸出欄)", WS_VISIBLE | WS_CHILD | ES_MULTILINE | WS_VSCROLL, 20, 120, 643, 100, hwnd, NULL, NULL, NULL));
+}
+LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
+	switch (msg) {
+	case WM_CREATE:
+		init(hwnd);
+		break;
+	case WM_COMMAND:
+		switch (wp) {
+		case 1:
+			calc();
+			break;
+		}
+		break;
+	case WM_CLOSE:
+		PostQuitMessage(0);
+		break;
+	case WM_DESTROY:
+		DestroyWindow(hwnd);
+		break;
+	default:
+		return DefWindowProc(hwnd, msg, wp, lp);
+	}
+}
