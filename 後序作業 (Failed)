@@ -1,0 +1,145 @@
+#include <iostream>
+#include <vector>
+#include <sstream>
+using namespace std;
+enum C_TYPE {
+    CALCULATION, VALUE
+};
+class calc_member {
+public:
+    calc_member(int value) : value(value) {
+        type = VALUE;
+    }
+    calc_member(char c) : mode(c) {
+        type = CALCULATION;
+    }
+    C_TYPE getType() {
+        return type;
+    }
+    string print() {
+        if (type == VALUE) return to_string(value);
+        return string(1,mode);
+    }
+    char getMode() {
+        return mode;
+    }
+    int getValue() {
+        return value;
+    }
+private:
+    C_TYPE type;
+    int value;
+    char mode;
+};
+bool isCalculation(char& c) {
+    return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')';
+}
+void debug(calc_member& m) {
+    cout << "Debug: " + m.print() << endl;
+}
+void solvingCalculation(calc_member m, vector<calc_member>& nums, vector<calc_member>& stacks) {
+    if (stacks.empty()) {
+        stacks.push_back(m);
+        return;
+    }
+    calc_member last_m = stacks.back();
+    char mode = m.getMode();
+    char last = last_m.getMode();
+
+    if (mode == '+' || mode == '-') {
+        if (last == '*' || last == '/' || last == '+' || last == '-') {
+            nums.push_back(last_m);
+            stacks.pop_back();
+            stacks.push_back(m);
+            return;
+        }
+        if (last == '(') {
+            stacks.push_back(m);
+            return;
+        }
+    }
+    if (mode == '*' || mode == '/') {
+        if (last == '*' || last == '/') {
+            nums.push_back(last_m);
+            stacks.pop_back();
+        }
+        stacks.push_back(m);
+        return;
+    }
+    if (mode == '(') {
+        stacks.push_back(m);
+        return;
+    }
+    if (mode == ')') {
+        for (int i = stacks.size() - 1; i >= 0; i--) {
+            calc_member member = stacks.back();
+            char current = member.getMode();
+            if (current == '(') {
+                stacks.pop_back();
+                break;
+            }
+            debug(member);
+            nums.push_back(member);
+            stacks.pop_back();
+        }
+    }
+}
+void solvingData(calc_member m,vector<calc_member>& nums, vector<calc_member>& stacks) {
+    if (m.getType() == CALCULATION) {
+        solvingCalculation(m, nums, stacks);
+        return;
+    }
+    if (m.getType() == VALUE) {
+        nums.push_back(m);
+    }
+}
+void appendSS(stringstream& ss, int& temp, char& c) {
+    temp++;
+    ss << c;
+}
+vector<calc_member> buildStackers(string item) {
+    vector<calc_member> nums;
+    vector<calc_member> stacks;
+    stringstream ss;
+    int temp = 0;
+    for (int i = 0; i < item.size(); i++) {
+        char c = item.at(i);
+        if (c >= '0' && c <= '9') {
+            appendSS(ss, temp, c);
+            continue;
+        }
+        if (isCalculation(c)) {
+            if (temp == 0) {
+                solvingData({ c }, nums, stacks);
+                continue;
+            }
+            int ie;
+            ss >> ie;
+            temp = 0;
+            ss.clear();
+            solvingData({ ie }, nums, stacks);
+            solvingData({ c }, nums, stacks);
+        }
+    }
+    int ie;
+    ss >> ie;
+    ss.clear();
+    solvingData({ ie }, nums, stacks);
+    if (!stacks.empty()) {
+        for (int i = stacks.size() - 1; i >= 0; i--) {
+            debug(stacks[i]);
+            nums.push_back(stacks.at(i));
+        }
+    }
+    return nums;
+}
+int main() {
+    string s;
+    while (getline(cin, s)) {
+        auto ve = buildStackers(s);
+        for (int i = 0; i < ve.size(); i++) {
+            cout << ve.at(i).print() << " ";
+        }
+        cout << endl;
+    }
+}
