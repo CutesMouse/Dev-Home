@@ -1,0 +1,35 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+int* nums;
+int data[6];
+void dfs(int depth, int maxDepth, int pool, int st) {
+	if (depth == maxDepth) {
+		for (int i = 0 ; i < maxDepth ; i++) {
+			if (i == maxDepth -1) cout << data[i];
+			else cout << data[i] << " ";
+		}
+		cout << endl;
+		return;
+	} 
+	for (int i = st ; i < pool; i++) {
+		data[depth] = nums[i];
+		dfs(depth+1,maxDepth,pool,i+1);
+	}
+	
+}
+int main() {
+	int n;
+	bool isFirst = true;
+	while (cin >> n) {
+		if (!isFirst) {
+			cout << "\n";
+		} else isFirst = false;
+		nums = new int[n];
+		for (int i = 0 ; i < n ; i ++) {
+			cin >> nums[i];
+		}
+		dfs(0,6,n,0);
+		delete[] nums;
+	}
+}
