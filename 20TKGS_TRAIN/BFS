@@ -1,0 +1,53 @@
+#include <iostream>
+using namespace std;
+int dx[4] = {0,1,0,-1};
+int dy[4] = {1,0,-1,0};
+struct pos {
+	pos(int x, int y) {
+		this->x = x;
+		this->y = y;
+	}
+	pos() {
+		
+	}
+	bool operator==(pos &b) const {
+		return b.x == x && b.y == y;
+	}
+	int x,y;
+	int d;
+};
+pos queue[16];
+bool used[4][4];
+bool isValid(pos p) {
+	if (p.x >= 4 || p.y >= 4) return false;
+	if (p.x < 0 || p.y < 0) return false;
+	return !used[p.x][p.y];
+}
+int bfs(pos start, pos end, pos current, int step) {
+	start.d = 0;
+	queue[0] = start;
+	used[start.x][start.y] = true;
+	int queueEnd = 1;
+	for (int p = 0 ; p < queueEnd ; p++) {
+		pos now = queue[p];
+		cout << "Now: " << now.x << " , " << now.y << "\n";
+		if (now == end) {
+			return now.d;
+		}
+		for (int side = 0 ; side < 4 ; side ++) {
+			pos nxt = now;
+			nxt.x += dx[side];
+			nxt.y += dy[side];
+			nxt.d++;
+			if (isValid(nxt)) {
+				queue[queueEnd] = nxt;
+				queueEnd++;
+				used[nxt.x][nxt.y] = true;
+			}
+		}
+	}
+	return -1;
+}
+int main() {
+	cout << bfs(pos(0,0),pos(3,3),pos(0,0),1);
+}
