@@ -1,0 +1,34 @@
+#include <iostream>
+#include <vector>
+#include <iomanip>
+using namespace std;
+int pos[100];
+int getPos(int index) {
+	if (index == 0) return 1;
+	if (index <0) return 0;
+	return pos[index];
+}
+int main() {
+	int a,b;
+	int **pos;
+	pos = new int*[a];
+	for (i=0; i<a; i++)
+	{
+		pos[i] = new int[b];
+	}
+	vector<vector<int>> v;
+	v.resize(a);
+	for (i=0; i<a; i++)
+	{
+		v[i].resize(b);
+	}
+	
+	int t = 10;
+	pos[1] = 1;
+	pos[2] = 5;
+	pos[3] = 13;
+	for (int i = 4 ; i <= t ; i++) {
+		pos[i] = pos[i-1]*2 + pos[i-2] + pos[i-3];
+	}
+	cout << pos[t];
+}
