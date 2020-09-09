@@ -1,0 +1,106 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <string>
+using namespace std;
+struct Card {
+public:
+	char point;
+	char type;
+	Card() {
+
+	}
+	Card(char t, char p) : point(p), type(t) {
+	}
+};
+int getTurn(char c) {
+	if (c == 'S') return 0;
+	if (c == 'W') return 1;
+	if (c == 'N') return 2;
+	if (c == 'E') return 3;
+}
+int nextTurn(int turn) {
+	if (turn >= 3) return 0;
+	return turn + 1;
+}
+int getTPos(char type) {
+	if (type == 'C') return 0;
+	if (type == 'D') return 1;
+	if (type == 'S') return 2;
+	if (type == 'H') return 3;
+	return -1;
+}
+int getPPos(char point) {
+	if (point == '2') return 0;
+	if (point == '3') return 1;
+	if (point == '4') return 2;
+	if (point == '5') return 3;
+	if (point == '6') return 4;
+	if (point == '7') return 5;
+	if (point == '8') return 6;
+	if (point == '9') return 7;
+	if (point == 'T') return 8;
+	if (point == 'J') return 9;
+	if (point == 'Q') return 10;
+	if (point == 'K') return 11;
+	if (point == 'A') return 12;
+	return -1;
+}
+bool comp(Card a, Card b) {
+	/*
+	C = Clubs♣ < D = Diamonds♢ < S = Spades♠ < H = Hearts♡ 
+	2 < 3 < 4 < 5 < 6 < 7 < 8 < 9 < T < J < Q < K < A*/
+	if (getTPos(a.type) > getTPos(b.type)) return false;
+	if (getPPos(a.point) >= getPPos(b.point)) return false;
+	return true;
+}
+void print(string before, vector<Card>& v) {
+	cout << before << ": ";
+	sort(&v[0], &v[0]+v.size(), comp);
+	for (int i = 0; i < v.size(); i++) cout << v.at(i).type << v.at(i).point << " ";
+	cout << endl;
+}
+int main() {
+	int turn;
+	char f;
+	while (cin >> f) {
+		if (f == '#') return 0;
+		string get;
+		string info;
+		vector<Card> S;
+		vector<Card> W;
+		vector<Card> N;
+		vector<Card> E;
+		turn = nextTurn(getTurn(f));
+
+		getline(cin, get);
+		getline(cin,get);
+		info = get;
+		getline(cin, get);
+		info = info + get;
+		for (int i = 0; i + 1 < info.size(); i += 2) {
+			char Type = info.at(i);
+			char Point = info.at(i + 1);
+			Card c(Type, Point);
+			switch (turn) {
+			case 0:
+				S.push_back(c);
+				break;
+			case 1:
+				W.push_back(c);
+				break;
+			case 2:
+				N.push_back(c);
+				break;
+			case 3:
+				E.push_back(c);
+				break;
+			}
+			turn = nextTurn(turn);
+		}
+		print("S", S);
+		print("W", W);
+		print("N", N);
+		print("E", E);
+	}
+}
