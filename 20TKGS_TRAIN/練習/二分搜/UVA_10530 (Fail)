@@ -1,0 +1,29 @@
+#include <iostream>
+#include <string>
+using namespace std;
+int main() {
+	int n;
+	int max, min;
+	max = 10;
+	min = 1;
+	string hint;
+	while (cin >> n) {
+		if (n == 0) return 0;
+		getline(cin, hint);
+		getline(cin, hint);
+		if (hint == "too high") {
+			max = n;
+		}
+		if (hint == "too low") {
+			min = n;
+		}
+		if (hint == "right on") {
+			if (max > n&& min < n) {
+				cout << "Stan may be honest" << endl;
+			}
+			else cout << "Stan is dishonest" << endl;
+			max = 10;
+			min = 1;
+		}
+	}
+}
