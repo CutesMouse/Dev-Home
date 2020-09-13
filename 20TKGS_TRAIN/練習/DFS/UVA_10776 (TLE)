@@ -1,0 +1,37 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int* dfsInfo;
+vector<string> couted;
+void dfs(int depth, int maxDepth,int nextFrom, string &s) {
+	if (depth == maxDepth) {
+		string c;
+		for (int i = 0; i < maxDepth; i++) c+= s.at(dfsInfo[i]);
+		sort(c.begin(), c.end());
+		if (count(couted.begin(), couted.end(), c)) {
+			return;
+		}
+		cout << c << endl;
+		couted.push_back(c);
+		return;
+	}
+	if (nextFrom+maxDepth-depth > s.size()) return;
+	for (int i = nextFrom; i < s.size(); i++) {
+		dfsInfo[depth] = i;
+		dfs(depth + 1, maxDepth, i + 1, s);
+	}
+}
+int main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	string s;
+	while (cin >> s) {
+		int pick;
+		cin >> pick;
+		dfsInfo = new int[pick];
+		dfs(0, pick, 0,s);
+		delete[] dfsInfo;
+		couted.clear();
+	}
+}
