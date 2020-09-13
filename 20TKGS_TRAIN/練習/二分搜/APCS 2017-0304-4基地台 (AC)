@@ -1,0 +1,45 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int bs(int* stops, int n, int d);
+int getNeed(int* stops, double r, int d);
+int main() {
+    int* stops;
+    int d;
+    while (cin >> d) {
+        stops = new int[d];
+        int k;
+        cin >> k;
+        for (int i = 0; i < d; i++) {
+            cin >> stops[i];
+        }
+        sort(stops, stops + d);
+        cout << bs(stops, k,d) << endl;
+    }
+}
+int bs(int* stops, int n, int d) {
+    double max = stops[d - 1];
+    double min = 1;
+    while (max - min > 0.1) {
+        double mid = (max + min) / (double) 2;
+        int need = getNeed(stops, mid,d);
+        if (need == n) {
+            max = mid;
+            continue;
+        }
+        if (need > n)  min = mid;
+        else max = mid;
+    }
+    return (int)(max * 2);
+}
+int getNeed(int* stops, double r, int d) {
+    int need = 1;
+    double last = stops[0] + r;
+    for (int i = 0; i < d; i++) {
+        if (abs(stops[i] - last) > r) {
+            last = stops[i] + r;
+            need += 1;
+        }
+    }
+    return need;
+}
