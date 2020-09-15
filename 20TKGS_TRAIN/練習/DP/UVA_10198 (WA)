@@ -1,0 +1,23 @@
+#include <iostream>
+using namespace std;
+int main() {
+	int n;
+	while (cin >> n) {
+		int* c;
+		c = new int[n+1];
+		c[0] = 2;
+		for (int i = 1 ; i <= n;i++) {
+			if (i - 2 < 0) {
+				c[i] = 2*c[i-1]+1;
+				continue;
+			}
+			if (i - 3 < 0) {
+				c[i] = 2*c[i-1] +c[i-2]+1;
+				continue;
+			}
+			c[i] = 2*c[i-1] + c[i-2]+ c[i-3];
+		}
+		cout << c[n-1]<<endl;
+		delete[] c;
+	}
+}
