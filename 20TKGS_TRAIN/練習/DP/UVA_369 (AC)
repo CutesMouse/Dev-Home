@@ -1,0 +1,36 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+vector<int> mul;
+vector<int> divi;
+int main() {
+	int n,m,em;
+	while (cin >> n >> m) {
+		if (n == m && n == 0) return 0;
+		mul.clear();
+		divi.clear();
+		em = m;
+		if (n/2 < m) {
+			m = n - m;
+		}
+		for (int i = 0; i < m;i++) {
+			mul.push_back(n - i);
+		}
+		for (int i = 1; i <=m; i++) {
+			vector<int>::iterator pos = find(mul.begin(),mul.end(),i);
+			if (pos == mul.end()) {
+				divi.push_back(i);
+				continue;
+			}
+			mul.erase(pos);
+		}
+		long double c = 1;
+		for (int i = 0 ; true ;i++) {
+			if (i < mul.size()) c*=mul[i];
+			if (i < divi.size()) c /= divi[i];
+			if (i >= mul.size() && i >= divi.size()) break;
+		}
+		cout << n<< " things taken "<<em<<" at a time is "<<(long long int)c<<" exactly."<<endl;
+	}
+}
