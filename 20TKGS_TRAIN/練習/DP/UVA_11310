@@ -1,0 +1,27 @@
+#include <iostream>
+using namespace std;
+//top 1,down 2, empty 0
+int dp(int last, int line,int maxLine) {
+	if (line >= maxLine) return 0;
+	cout << last << " " << line << endl;
+	switch (last) {
+		case 0:
+			if (line+1 == maxLine) return 1;
+			return dp(1,line,maxLine) + dp(2,line,maxLine) + dp(1,line+1,maxLine)+dp(2,line+1,maxLine);
+		case 1:
+			return dp(0,line+1,maxLine) + dp(0,line+2,maxLine);
+		case 2:
+			return dp(0,line+1,maxLine) + dp(0,line+2,maxLine);
+	}
+	return 0;
+}
+int main() {
+	int n;
+	cin >> n;
+	for (int i = 0 ; i < n ; i++) {
+		if (i != 0) cout << endl;
+		int lines;
+		cin >> lines;
+		cout << dp(0,0,lines);
+	}
+}
