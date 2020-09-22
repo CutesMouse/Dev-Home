@@ -1,0 +1,32 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+int main() {
+	//C(a,b) = a!/b!(a-b)!
+	int a,b;
+	double d;
+	while (cin >> a>>b) {
+		d= 0;
+		for (int i = a; i >b; i--) {
+			d += log10(i);
+		}
+		for (int i = a-b; i > 0; i--) {
+			d -= log10(i);
+		}
+		cout << (int)d + 1<< endl;
+	}
+}
+
+A UVA 128 pAlicesoft
+B UVA 153 pBloodytears
+C UVA 200 pCastlevania
+D UVA 202 pDarksouls
+E UVA 478 pElderScrolls
+F UVA 665 pFinalFantasy
+G UVA 10219 pGrandtheftauto
+H UVA 10408 pHeavenfeels
+I UVA 11491 pIkusamegami
+J UVA 11526 pJOJO
+K UVA 11616 pKankore
+L UVA 11683 pLegendofzelda
+M UVA 11947
