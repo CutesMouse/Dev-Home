@@ -1,0 +1,179 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+long long int getPos(string s) {
+	string b = s;
+	sort(b.begin(),b.end());
+	if (b == s) return 1;
+	long long int d = 2;
+	while (next_permutation(b.begin(),b.end())) {
+		if (s == b) return d;
+		d++;
+	}
+}
+int main() {
+	string s;
+	while (getline(cin,s)) {
+		if (s == "#") return 0;
+		cout << getPos(s) << endl;
+	}
+}
+
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+vector<int> ta;
+int getID(char c) {
+	return c - 'A';
+}
+void modify(int pos, char input) {
+	for (int i = ta.size(); i > pos; i--) {
+		if (ta[i-1] == input) {
+			i++;
+			continue;
+		}
+		ta[i] = ta[i-1];
+	}
+	ta[pos] = getID(input);
+}
+void dfs(int depth, string& s) {
+	int pos = find(ta.begin(),ta.end(),getID(s.at(depth)));
+	if (pos == -1) {
+		ta.push_back(s.at(depth));
+		dfs(depth,s);
+		return;
+	}
+	for (int i = depth-1; i >= 0 ; i--) {
+		int pPos = find(ta.begin(),ta.end(),getID(s.at(i)));
+		if (pPos < pos) {
+			modify(pPos,s.at(depth));
+			dfs(depth,s);
+			return;
+		}
+	}
+}
+int main() {
+	string s;
+	while (getline(cin,s)) {
+		if (s == "#") break;
+			dfs(0,s);
+		}
+	}
+	for (int i = 0 ; i < ta.size();i++) {
+		cout << ta[i];
+	}
+}
+
+
+#include <iostream>
+#include <vector>
+using namespace std;
+long int calc(int* data, vector<int> &table, int n) {
+	int sum = 0;
+	int pointer = 0;
+	for (int i = n ; i >0 ; i--) {
+		if (data[pointer] >= i) sum += data[pointer];
+		else {
+			pointer ++;
+			sum += data[pointer];
+		}
+	}
+}
+void buildTable(int n, vector<int>& table) {
+	for (int i = 1; i <= n; i++) {
+		if (n % 1 == 0) table.push_back(i);
+	}
+}
+void buildData(int* data, vector<int>& table, int n) {
+	for (int i = 0 ; i < table.size() ;i++) {
+		data[i] = n / table[i];
+	}
+}
+int main() {
+	int n;
+	while (cin >> n) {
+		vector<int> table;
+		buildTable(n,table);
+		int *data = new int[table.size()];
+		buildData(data,table,n);
+		cout << calc(data,table,n) << endl;
+	}
+}
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+void pri(vector<int> &v) {
+	//for (int i = 0 ; i < v.size(); i++) cout << v.at(i) << " ";
+	//cout << endl;
+}
+bool contains(int i, vector<int>& v) {
+	return find(v.begin(),v.end(),i) != v.end();
+}
+void realCheck(int i, vector<int>& real, vector<int>& possible) {
+	if (contains(i,possible)) {
+		possible.erase(find(possible.begin(),possible.end(),i));
+	}
+	if (!contains(i,real)) {
+		real.push_back(i);
+	}
+}
+void possibleCheck(int i, vector<int>& real, vector<int>& possible) {
+	if (contains(i,possible)) return;
+	if (contains(i,real))  return;
+	possible.push_back(i);
+}
+int main() {
+	int test;
+	cin >> test;
+	for (int i = 0 ; i < test; i++) {
+		vector<int> possible;
+		vector<int> real;
+		int count, times;
+		cin >> count >> times;
+		for (int a= 0; a < times; a++) {
+			int per;
+			cin >> per;
+			int *left = new int[per];
+			int *right = new int[per];
+			for (int b = 0; b < per; b++) {
+				cin >> left[b];
+			}
+			for (int b = 0; b < per; b++) {
+				cin >> right[b];
+			}
+			string mode;
+			cin >> mode;
+			if (mode == "=") {
+				for (int tier = 0 ; tier < per; tier++) {
+					realCheck(left[tier],real,possible);
+					realCheck(right[tier],real,possible);
+				}
+			}
+			if (mode == ">") {
+				for (int tier = 0; tier < per; tier++) {
+					possibleCheck(left[tier],real,possible);
+					possibleCheck(right[tier],real,possible);
+				}
+			}
+			if (mode == "<") {
+				for (int tier = 0; tier < per; tier++) {
+					possibleCheck(left[tier],real,possible);
+					possibleCheck(right[tier],real,possible);
+				}
+			}
+			pri(real);
+			pri(possible);
+		}
+		
+			pri(real);
+			pri(possible);
+		if (possible.size() == 1) cout << possible[0];
+		else cout << 0;
+		if (i != test-1) cout << endl << endl;
+	}
+}
